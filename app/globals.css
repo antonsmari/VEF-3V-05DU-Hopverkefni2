@@ -1,26 +1,135 @@
-@import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* CSS RESET/BASE */
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+	margin: 0;
+	font-family: var(--font-geist-sans, system-ui, sans-serif);
+	background-color: #f5f7fa;
+	color: #1f2933;
+	line-height: 1.6;
+}
+
+/* COLOUR VARIABLES */
+:root {
+	--bg-main: #f5f7fa;
+	--bg-section: #ffffff;
+	--nav-bg: #1e293b;
+	--accent: #3b82f6;
+	--border-soft: #e5e7eb;
+}
+
+/* NAVIGATION */
+ul {
+	list-style: none;
+	margin: 0;
+	padding: 0 2rem;
+	display: flex;
+	gap: 2rem;
+	align-items: center;
+
+	background-color: var(--nav-bg);
+	position: sticky;
+	top: 0;
+	z-index: 1000;
+}
+
+li a {
+	color: #ffffff;
+	text-decoration: none;
+	font-weight: 500;
+	padding: 1rem 0;
+	display: inline-block;
+}
+
+li a:hover {
+	text-decoration: underline;
+}
+
+/* PAGE LAYOUT */
+body > div {
+	padding: 2rem;
+	max-width: 900px;
+	margin: 0 auto;
+}
+
+/* SECTIONS */
+div > div {
+	background-color: var(--bg-section);
+	padding: 1.5rem;
+	margin-top: 1.5rem;
+	border-radius: 6px;
+	border: 1px solid var(--border-soft);
+}
+
+/* TEXT */
+p {
+	margin-top: 0;
+}
+
+label {
+	display: block;
+	margin-top: 1rem;
+	font-weight: 500;
+}
+
+/* FORM */
+form {
+	background-color: var(--bg-section);
+	padding: 2rem;
+	border-radius: 6px;
+	border: 1px solid var(--border-soft);
+	max-width: 400px;
+}
+
+input {
+	width: 100%;
+	padding: 0.5rem 0.6rem;
+	margin-top: 0.25rem;
+	border-radius: 4px;
+	border: 1px solid var(--border-soft);
+	font-size: 1rem;
+}
+
+input:focus {
+	outline: none;
+	border-color: var(--accent);
+}
+
+/* BUTTONS AND LINKS */
+
+a {
+  color: white;
+}
+
+button,
+a {
+	font-size: 1rem;
+  color: white;
+}
+
+button {
+	margin-top: 1.5rem;
+	padding: 0.6rem 1.2rem;
+	border-radius: 4px;
+	border: none;
+	background-color: var(--accent);
+	color: white;
+	cursor: pointer;
+}
+
+button:hover {
+	opacity: 0.9;
+}
+
+a {
+	color: var(--accent);
+	font-weight: 500;
+}
+
+a:hover {
+	text-decoration: underline;
 }

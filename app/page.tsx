@@ -9,11 +9,11 @@ export default function Home() {
       skemmtilegar stundir saman!</p>
       <div>
       <p>log in</p>
-        <a href="/login">Login</a>
+        <button><a href="/login">Login</a></button>
       </div>
       <div>
         <p>sign up</p>
-        <a href="/signup">Sign Up</a>
+        <button><a href="/signup">Sign Up</a></button>
       </div>
     </div>
   );
