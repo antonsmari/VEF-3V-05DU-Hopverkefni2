@@ -2,7 +2,7 @@ import Form from "next/form";
 export default function CreateGroup() {
   return(
     <div>
-      <Form action="">
+      <Form action="" formMethod="POST">
         <label>Title the group event</label>
         <input type="text" required/>
         <label>Description (optional)</label>
