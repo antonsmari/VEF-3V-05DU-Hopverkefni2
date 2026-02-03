@@ -1,8 +1,44 @@
 import Form from "next/form";
+import { getUserByEmail } from "@/db/repo/usersRepo";
+import bcrypt from "bcryptjs";
+import { redirect } from "next/navigation";
 export default function Login() {
+
+	async function loginUser(formData: FormData){
+	// run function when loginform has been submitted
+		"use server";
+
+		const email = formData.get("email") as string;
+		// get the email that was submitted in the form
+		const password = formData.get("password") as string;
+		// get the password that was submitted in the form
+
+		const user = await getUserByEmail(email);
+		// check if submitted email is in the list of registered users
+
+		if (!user) {
+			throw new Error("No registered user found with this email")
+		}
+
+		const validPassword = await bcrypt.compare(
+			password,
+			user.passwordHash
+			// check if the password of registered user matches the submitted password
+		);
+
+		if (!validPassword) {
+			throw new Error("Invalid Password");
+			// if the password does not match, an error message is sent
+		}
+
+		redirect("/")
+
+	}
+
 	return (
 		<div>
-			<Form action="">
+			<Form action={loginUser}>
+			/* call in the function loginUser when the form is submitted */
 				<label htmlFor="name">Name:</label>
 				<input id="name" type="text" name="name" placeholder="Name" />
 
