@@ -89,4 +89,23 @@ export const transactionParticipants = pgTable(
 	],
 );
 
+export const sessions = pgTable(
+	"sessions",
+	{
+		id: bigserial("id", { mode: "number" }).primaryKey(),
+		userId: bigint("user_id", { mode: "number" })
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		tokenHash: text("token_hash").notNull().unique(),
+		createdAt: timestamp("created_at", { withTimezone: true })
+			.notNull()
+			.defaultNow(),
+		expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+	},
+	(sessions) => ({
+		userIdIdx: index("sessions_user_id_idx").on(sessions.userId),
+		expiresAtIdx: index("sessions_expires_at_idx").on(sessions.expiresAt),
+	}),
+);
+
 export type GroupRole = "admin" | "member";
