@@ -2,10 +2,11 @@ import Form from "next/form";
 import { getUserByEmail } from "@/db/repo/usersRepo";
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
-export default function Login() {
+import { createDbSession } from "@/lib/auth/session";
 
-	async function loginUser(formData: FormData){
-	// run function when loginform has been submitted
+export default function Login() {
+	async function loginUser(formData: FormData) {
+		// run function when loginform has been submitted
 		"use server";
 
 		const email = formData.get("email") as string;
@@ -17,12 +18,12 @@ export default function Login() {
 		// check if submitted email is in the list of registered users
 
 		if (!user) {
-			throw new Error("No registered user found with this email")
+			throw new Error("No registered user found with this email");
 		}
 
 		const validPassword = await bcrypt.compare(
 			password,
-			user.passwordHash
+			user.passwordHash,
 			// check if the password of registered user matches the submitted password
 		);
 
@@ -31,17 +32,16 @@ export default function Login() {
 			// if the password does not match, an error message is sent
 		}
 
-		redirect("/")
+		await createDbSession(user.id);
+		// create a session for the logged in user
 
+		redirect("/");
 	}
 
 	return (
 		<div>
 			<Form action={loginUser}>
-			/* call in the function loginUser when the form is submitted */
-				<label htmlFor="name">Name:</label>
-				<input id="name" type="text" name="name" placeholder="Name" />
-
+				{/* call in the function loginUser when the form is submitted */}
 				<label htmlFor="email">Email:</label>
 				<input
 					id="email"
