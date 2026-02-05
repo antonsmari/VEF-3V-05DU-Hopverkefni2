@@ -102,10 +102,10 @@ export const sessions = pgTable(
 			.defaultNow(),
 		expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
 	},
-	(sessions) => ({
-		userIdIdx: index("sessions_user_id_idx").on(sessions.userId),
-		expiresAtIdx: index("sessions_expires_at_idx").on(sessions.expiresAt),
-	}),
+	(sessions) => [
+		index("sessions_user_id_idx").on(sessions.userId),
+		index("sessions_expires_at_idx").on(sessions.expiresAt),
+	],
 );
 
 export type GroupRole = "admin" | "member";
