@@ -4,6 +4,10 @@ import { eq, and } from "drizzle-orm";
 
 export async function createGroup(args: {
 	name: string;
+	//description: string | null;
+	//startDate: string | null;
+	//endDate: string | null;
+	//CAUSED AN ERROR, MIGHT ADD LATER
 	createdByUserId: number;
 }) {
 	return db.transaction(async (tx) => {
@@ -11,6 +15,10 @@ export async function createGroup(args: {
 			.insert(groups)
 			.values({
 				name: args.name,
+				//description: args.description,
+				//startDate: args.startDate,
+				//endDate: args.endDate,
+				//CAUSED AN ERROR, MIGHT ADD LATER
 				createdBy: args.createdByUserId,
 			})
 			.returning();
