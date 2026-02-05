@@ -40,7 +40,7 @@ export default function Login() {
 
 	return (
 		<div>
-			<Form action={loginUser}>
+			<Form formMethod="post" action={loginUser}>
 				{/* call in the function loginUser when the form is submitted */}
 				<label htmlFor="email">Email:</label>
 				<input

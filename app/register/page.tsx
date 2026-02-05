@@ -19,7 +19,7 @@ export default async function Register() {
 	}
 	return (
 		<div>
-			<Form action={newUser}>
+			<Form formMethod="post" action={newUser}>
 				{/* put register information in a session of logged in users*/}
 				{/* reroutes to an enviroment for a logged in user*/}
 				<label htmlFor="name">Name:</label>
