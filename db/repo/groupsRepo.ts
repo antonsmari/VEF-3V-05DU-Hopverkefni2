@@ -1,6 +1,6 @@
 import { db } from "@/db/schema";
-import { groups, groupMembers } from "@/db/schema/schema";
-import { eq, and } from "drizzle-orm";
+import { groups, groupMembers, users } from "@/db/schema/schema";
+import { eq, and, sql } from "drizzle-orm";
 
 export async function createGroup(args: {
 	name: string;
@@ -101,12 +101,22 @@ export async function listGroupMembers(groupId: number) {
 	return await db
 		.select()
 		.from(groupMembers)
+		.innerJoin(users, eq(groupMembers.userId, users.id))
 		.where(eq(groupMembers.groupId, groupId));
 }
 
 export async function listUserGroups(userId: number) {
 	return await db
-		.select()
-		.from(groupMembers)
-		.where(eq(groupMembers.userId, userId));
+		.select({
+			id: groups.id,
+			name: groups.name,
+			createdBy: groups.createdBy,
+			createdAt: groups.createdAt,
+			updatedAt: groups.updatedAt,
+			memberCount: sql<number>`count(distinct ${groupMembers.userId})`,
+		})
+		.from(groups)
+		.innerJoin(groupMembers, eq(groups.id, groupMembers.groupId))
+		.where(eq(groupMembers.userId, userId))
+		.groupBy(groups.id);
 }
