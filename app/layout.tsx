@@ -47,7 +47,7 @@ export default async function RootLayout({
 						</li>
 						{user ? (
 							<li>
-								<Link href="#/user/dashboard">Dashboard</Link>
+								<Link href="/user/dashboard">Dashboard</Link>
 							</li>
 						) : null}
 						{user ? (
