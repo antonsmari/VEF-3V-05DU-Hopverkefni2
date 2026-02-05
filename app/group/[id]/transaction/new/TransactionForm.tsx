@@ -1,8 +1,7 @@
 "use client";
 
 import Form from "next/form";
-import { useActionState, useEffect } from "react";
-import { useToast } from "@/components/ToastProvider";
+import { FormWithAction } from "@/components/FormWithAction";
 
 type ActionState = { error: string | null };
 
@@ -15,33 +14,8 @@ export default function TransactionForm({
 	}>;
 	action: (formData: FormData) => Promise<void>;
 }) {
-	const { showToast } = useToast();
-
-	const [state, formAction, isPending] = useActionState(
-		async (prevState: ActionState, formData: FormData) => {
-			try {
-				await action(formData);
-				return { error: null };
-			} catch (error) {
-				return {
-					error:
-						error instanceof Error
-							? error.message
-							: "Unknown error",
-				};
-			}
-		},
-		{ error: null } as ActionState,
-	);
-
-	useEffect(() => {
-		if (state.error) {
-			showToast(state.error, "error");
-		}
-	}, [state.error, showToast]);
-
 	return (
-		<Form action={formAction} formMethod="post">
+		<FormWithAction action={action}>
 			<label htmlFor="title">Title:</label>
 			<input id="title" type="text" name="title" placeholder="Title" />
 
@@ -79,6 +53,6 @@ export default function TransactionForm({
 			</div>
 
 			<button type="submit">Submit</button>
-		</Form>
+		</FormWithAction>
 	);
 }

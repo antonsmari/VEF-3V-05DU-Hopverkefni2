@@ -30,16 +30,16 @@ export default async function TransactionNew({
 			0,
 		);
 
-		if (isNaN(totalAmount) || totalAmount <= 0) {
-			throw new Error("Total amount must be defined and greater than 0");
-		}
-
 		for (const participant of participants) {
 			if (isNaN(participant.paidAmount) || participant.paidAmount < 0) {
 				throw new Error(
 					"Paid amount must be a number and cannot be negative",
 				);
 			}
+		}
+
+		if (isNaN(totalAmount) || totalAmount <= 0) {
+			throw new Error("Total amount must be defined and greater than 0");
 		}
 
 		const dateString = formData.get("occurredAt") as string;
@@ -49,7 +49,7 @@ export default async function TransactionNew({
 			occurredAt = new Date();
 		}
 
-		createTransaction({
+		await createTransaction({
 			groupId: Number(id),
 			createdByUserId: userId,
 			title: formData.get("title") as string,
