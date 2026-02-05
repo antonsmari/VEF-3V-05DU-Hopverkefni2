@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { getDbSession } from "@/lib/auth/session";
 import { getUserById } from "@/db/repo/usersRepo";
+import { ToastProvider } from "@/components/ToastProvider";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -61,7 +62,7 @@ export default async function RootLayout({
 					</ul>
 				</nav>
 
-				{children}
+				<ToastProvider>{children}</ToastProvider>
 			</body>
 		</html>
 	);
