@@ -1,16 +1,38 @@
-/* Generates an invite code in the format: 1 uppercase letter + 4 digits */
-/* Example: A4839, Q0021, L6492 */
+/* Generates an invite code in the format: 6 characters, each randomly a letter or number */
+/* Guarantees at least one letter and one number */
+/* Example: A9F2K7, 4B7Q2M, Z1R8P0 */
+
 
 export function generateInviteCode(): string {
-  const letter = String.fromCharCode(
-    65 + Math.floor(Math.random() * 26)
-  );
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const numbers = "0123456789";
 
-  const numbers = Math.floor(Math.random() * 10000)
-    .toString()
-    .padStart(4, "0");
+  let code = "";
+  let hasLetter = false;
+  let hasNumber = false;
 
-  return `${letter}${numbers}`;
+  while (code.length < 6) {
+    const isLetter = Math.random() < 0.5;
+
+    if (isLetter) {
+      const letter =
+        letters[Math.floor(Math.random() * letters.length)];
+      code += letter;
+      hasLetter = true;
+    } else {
+      const number =
+        numbers[Math.floor(Math.random() * numbers.length)];
+      code += number;
+      hasNumber = true;
+    }
+  }
+
+  // This line ensures at least one letter and one number
+  if (!hasLetter || !hasNumber) {
+    return generateInviteCode(); // regenerate if invalid
+  }
+
+  return code;
 }
 
 /* ---------------------------------------------------------------------------------------------------------------------------------- */
@@ -21,7 +43,8 @@ export function generateInviteCode(): string {
 groups (
   id SERIAL PRIMARY KEY,
   name TEXT,
-  invite_code VARCHAR(5) UNIQUE
+  invite_code VARCHAR(6) UNIQUE,
+  etc...
 )
 */
 
@@ -30,7 +53,8 @@ groups (
 /* Example of what the database insert could look like, with DB fallback protection! */
 /* Its commented because it gives a few errors due to the db not existing yet */
 
-/* import { generateInviteCode } from "@/scripts/inviteCode";
+/*
+import { generateInviteCode } from "@/scripts/inviteCode";
 import { db } from "@/db";
 
 export async function createGroup(name: string) {
@@ -58,4 +82,5 @@ export async function createGroup(name: string) {
       throw error;
     }
   }
-} */
+} 
+*/
