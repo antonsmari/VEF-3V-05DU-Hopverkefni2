@@ -8,6 +8,7 @@ import {
 	numeric,
 	primaryKey,
 	index,
+	date,
 } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
@@ -22,6 +23,10 @@ export const users = pgTable("users", {
 export const groups = pgTable("groups", {
 	id: bigserial("id", { mode: "number" }).primaryKey(),
 	name: varchar("name", { length: 100 }).notNull(),
+	//description: text("description"),
+	//startDate: date("start_date"),
+	//endDate: date("end_date"),
+	//CAUSED AN ERROR, MIGHT ADD LATER
 	createdBy: bigint("created_by", { mode: "number" }).notNull(),
 	createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 	updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
