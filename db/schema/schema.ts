@@ -2,6 +2,7 @@ import {
 	pgTable,
 	bigserial,
 	bigint,
+	boolean,
 	varchar,
 	text,
 	timestamp,
@@ -15,6 +16,9 @@ export const users = pgTable("users", {
 	email: text("email").notNull(),
 	passwordHash: text("password_hash").notNull(),
 	displayName: varchar("display_name", { length: 100 }).notNull(),
+	description: varchar("description", { length: 500 }).notNull().default(""),
+	pronouns: varchar("pronouns", { length: 20 }).notNull().default(""),
+	image: varchar("image", { length: 50 }).notNull().default(""),
 	createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 	updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 });
@@ -22,6 +26,13 @@ export const users = pgTable("users", {
 export const groups = pgTable("groups", {
 	id: bigserial("id", { mode: "number" }).primaryKey(),
 	name: varchar("name", { length: 100 }).notNull(),
+	description: varchar("description", { length: 500 }).notNull().default(""),
+	startDate: timestamp("start_date", { withTimezone: true })
+		.notNull()
+		.defaultNow(),
+	endDate: timestamp("end_date", { withTimezone: true }),
+	inviteCode: varchar("invite_code", { length: 20 }).unique(),
+	inviteCodeDisabled: boolean("invite_code_disabled").notNull().default(true),
 	createdBy: bigint("created_by", { mode: "number" }).notNull(),
 	createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 	updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
@@ -105,6 +116,24 @@ export const sessions = pgTable(
 	(sessions) => [
 		index("sessions_user_id_idx").on(sessions.userId),
 		index("sessions_expires_at_idx").on(sessions.expiresAt),
+	],
+);
+
+export const userDebts = pgTable(
+	"user_debts",
+	{
+		debtor: bigint("debtor", { mode: "number" })
+			.notNull()
+			.references(() => users.id),
+		debtee: bigint("debtee", { mode: "number" })
+			.notNull()
+			.references(() => users.id),
+		amount: numeric("amount", { precision: 12, scale: 2 })
+			.notNull()
+			.default("0"),
+	},
+	(userDebts) => [
+		primaryKey({ columns: [userDebts.debtor, userDebts.debtee] }),
 	],
 );
 

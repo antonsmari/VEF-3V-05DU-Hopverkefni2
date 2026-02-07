@@ -5,12 +5,18 @@ import { eq, and, sql } from "drizzle-orm";
 export async function createGroup(args: {
 	name: string;
 	createdByUserId: number;
+	description?: string;
+	startDate?: Date;
+	endDate?: Date | null;
 }) {
 	return db.transaction(async (tx) => {
 		const groupInsert = await tx
 			.insert(groups)
 			.values({
 				name: args.name,
+				description: args.description ?? "",
+				startDate: args.startDate ?? new Date(),
+				endDate: args.endDate ?? null,
 				createdBy: args.createdByUserId,
 			})
 			.returning();
@@ -45,6 +51,39 @@ export async function updateGroupName(id: number, name: string) {
 		.update(groups)
 		.set({ name, updatedAt: new Date() })
 		.where(eq(groups.id, id))
+		.returning();
+	return groupUpdate[0] ?? null;
+}
+
+export async function updateGroupDetails(args: {
+	id: number;
+	name?: string;
+	description?: string;
+	startDate?: Date;
+	endDate?: Date | null;
+	inviteCode?: string | null;
+	inviteCodeDisabled?: boolean;
+}) {
+	const groupUpdate = await db
+		.update(groups)
+		.set({
+			...(args.name !== undefined ? { name: args.name } : {}),
+			...(args.description !== undefined
+				? { description: args.description }
+				: {}),
+			...(args.startDate !== undefined
+				? { startDate: args.startDate }
+				: {}),
+			...(args.endDate !== undefined ? { endDate: args.endDate } : {}),
+			...(args.inviteCode !== undefined
+				? { inviteCode: args.inviteCode }
+				: {}),
+			...(args.inviteCodeDisabled !== undefined
+				? { inviteCodeDisabled: args.inviteCodeDisabled }
+				: {}),
+			updatedAt: new Date(),
+		})
+		.where(eq(groups.id, args.id))
 		.returning();
 	return groupUpdate[0] ?? null;
 }
@@ -110,6 +149,11 @@ export async function listUserGroups(userId: number) {
 		.select({
 			id: groups.id,
 			name: groups.name,
+			description: groups.description,
+			startDate: groups.startDate,
+			endDate: groups.endDate,
+			inviteCode: groups.inviteCode,
+			inviteCodeDisabled: groups.inviteCodeDisabled,
 			createdBy: groups.createdBy,
 			createdAt: groups.createdAt,
 			updatedAt: groups.updatedAt,

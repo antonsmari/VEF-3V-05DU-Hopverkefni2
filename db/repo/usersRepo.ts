@@ -6,6 +6,9 @@ export async function createUser(args: {
 	email: string;
 	passwordHash: string;
 	displayName: string;
+	description?: string;
+	pronouns?: string;
+	image?: string;
 }) {
 	const userInsert = await db
 		.insert(users)
@@ -13,6 +16,9 @@ export async function createUser(args: {
 			email: args.email,
 			passwordHash: args.passwordHash,
 			displayName: args.displayName,
+			description: args.description ?? "",
+			pronouns: args.pronouns ?? "",
+			image: args.image ?? "",
 		})
 		.returning();
 	return userInsert[0];
@@ -53,6 +59,31 @@ export async function updateUserPasswordHash(id: number, passwordHash: string) {
 		.update(users)
 		.set({ passwordHash, updatedAt: new Date() })
 		.where(eq(users.id, id))
+		.returning();
+	return userUpdate[0] ?? null;
+}
+
+export async function updateUserProfile(args: {
+	id: number;
+	displayName?: string;
+	description?: string;
+	pronouns?: string;
+	image?: string;
+}) {
+	const userUpdate = await db
+		.update(users)
+		.set({
+			...(args.displayName !== undefined
+				? { displayName: args.displayName }
+				: {}),
+			...(args.description !== undefined
+				? { description: args.description }
+				: {}),
+			...(args.pronouns !== undefined ? { pronouns: args.pronouns } : {}),
+			...(args.image !== undefined ? { image: args.image } : {}),
+			updatedAt: new Date(),
+		})
+		.where(eq(users.id, args.id))
 		.returning();
 	return userUpdate[0] ?? null;
 }
