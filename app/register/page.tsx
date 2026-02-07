@@ -1,6 +1,7 @@
 import Form from "next/form";
 import { createUser } from "@/db/repo/usersRepo";
 import bcrypt from "bcryptjs";
+import { redirect } from "next/navigation";
 import { requireUserId } from "@/lib/auth/requireUser";
 
 export default async function Register() {
@@ -16,6 +17,8 @@ export default async function Register() {
 				10,
 			),
 		});
+
+		redirect("/user/dashboard")
 	}
 	return (
 		<div>

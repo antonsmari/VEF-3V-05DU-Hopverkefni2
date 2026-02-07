@@ -35,7 +35,7 @@ export default function Login() {
 		await createDbSession(user.id);
 		// create a session for the logged in user
 
-		redirect("/");
+		redirect("/user/dashboard");
 	}
 
 	return (
