@@ -7,11 +7,15 @@ export default async function Group({
 	params,
 }: {
 	params: Promise<{ id: string }>;
+
 }) {
+	
 	const { id } = await params;
+
 	if (isNaN(Number(id))) {
 		redirect("/user/dashboard");
 	}
+	
 
 	const group = await getGroupById(Number(id));
 	const groupMembers = await listGroupMembers(Number(id));
@@ -27,6 +31,9 @@ export default async function Group({
 
 			<Link href={`/group/${group.id}/transaction/new`}>
 				Add New Transaction
+			</Link>
+			<Link href={`/group/${group.id}/invite/generate`}>
+				Generate Invite Code
 			</Link>
 
 			<h2>Members:</h2>
