@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
 import { getDbSession } from "@/lib/auth/session";
 import { getUserById } from "@/db/repo/usersRepo";
 import { ToastProvider } from "@/components/ToastProvider";
+
+const poppins = Poppins({
+	subsets: ["latin"],
+	variable: "--font-poppins",
+	weight: ["300", "400", "600", "700"],
+});
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -24,9 +30,9 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
 	children,
-}: Readonly<{
+}: {
 	children: React.ReactNode;
-}>) {
+}) {
 	const session = await getDbSession();
 	const userId = session?.userId;
 	const user = userId ? await getUserById(userId) : null;
@@ -34,35 +40,55 @@ export default async function RootLayout({
 	return (
 		<html lang="en">
 			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+				className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} antialiased`}
 			>
 				<nav>
 					<input type="checkbox" id="nav-toggle" />
+
 					<label htmlFor="nav-toggle" className="nav-toggle-label">
-						☰ Menu
+						☰  Menu
 					</label>
 
 					<ul className="nav-menu">
-						<li>
+						<li className="nav-left">
 							<Link href="/">Home</Link>
 						</li>
-						{user ? (
-							<li>
-								<Link href="/user/dashboard">Dashboard</Link>
-							</li>
-						) : null}
-						{user ? (
-							<li>
-								<Link href="#/user/payments">Payments</Link>
-							</li>
-						) : null}
-						<li>
-							<Link href="#/about">About</Link>
-						</li>
+
+						<div className="nav-right">
+							{user ? (
+								<>
+									<li>
+										<Link href="/user/dashboard">Dashboard</Link>
+									</li>
+									<li>
+										<Link href="/user/payments">Payments</Link>
+									</li>
+									<li>
+										<Link href="/logout">Logout</Link>
+									</li>
+								</>
+							) : (
+								<li>
+									<Link href="/login">Login</Link>
+								</li>
+							)}
+						</div>
 					</ul>
 				</nav>
 
 				<ToastProvider>{children}</ToastProvider>
+
+				<footer className="footer">
+					<div className="footer-left">
+						HÓPUR 1
+					</div>
+
+					<div className="footer-right">
+						<p>VEFÞ3VÞ05DU</p>
+						<p>Vorönn 2026</p>
+						<p>Lokaverkefni</p>
+				</div>
+				</footer>
 			</body>
 		</html>
 	);
