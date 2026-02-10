@@ -15,6 +15,8 @@ export default async function Group() {
 
 			<br />
 			<Link href="/group/create">Create New Group</Link>
+			<br/>
+			<Link href="/user/dashboard/profile">My Profile</Link>
 		</div>
 	);
 }
