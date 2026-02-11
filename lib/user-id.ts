@@ -15,7 +15,7 @@ export function generateUserId(): string {
 users (
   id SERIAL PRIMARY KEY,
   username VARCHAR(50),
-  user_code VARCHAR(4) UNIQUE
+  user_friendcode VARCHAR(4) UNIQUE
   email VARCHAR(100),
   etc...
 )
