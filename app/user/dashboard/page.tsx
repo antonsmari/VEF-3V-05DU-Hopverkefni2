@@ -1,5 +1,6 @@
 import { requireAndGetUser } from "@/lib/auth/requireUser";
 import { listUserGroups } from "@/db/repo/groupsRepo";
+import { sumUserDebts } from "@/db/repo/userDebtsRepo";
 import Image from "next/image";
 import Link from "next/link";
 import { date } from "drizzle-orm/mysql-core";
@@ -8,6 +9,8 @@ export default async function UserDashboard() {
 
 	const user = await requireAndGetUser();
 	// get the user that is logged in
+  
+	const debts = await sumUserDebts(user.id);
 
 	const groups = await listUserGroups(user.id)
 	// get the groups that the user is a part of via their user id
@@ -38,9 +41,9 @@ export default async function UserDashboard() {
 					<h2>{user.displayName}</h2>
 
 					{/* only displayed if user description is not null */}
-            		{user.description && (
-                		<p>{user.description}</p>
-            		)}
+          {user.description && (
+              <p>{user.description}</p>
+          )}
 				</div>
 				
 				<Link href="/user/dashboard/profile/settings">Update Profile</Link>
@@ -57,12 +60,12 @@ export default async function UserDashboard() {
 				<div className="stats-box">
 					<div className="stat-item">
 						<h4>You owe:</h4>
-						<p>$123.45</p>
+						<p>{debts.totalOwes} isk</p>
 					</div>
 
 					<div className="stat-item">
 						<h4>You are owed:</h4>
-						<p>$456.78</p>
+						<p>{debts.totalOwed} isk</p>
 					</div>
 				</div>
 
@@ -97,6 +100,10 @@ export default async function UserDashboard() {
 										<p>{group.description}</p>
 									)}
 
+                  <span className="group-name">
+                    Group: {group.name}
+                  </span>
+
 									<span className="activity-date">
 										DD.MM.YYYY - DD.MM.YYYY
 									</span>
@@ -124,8 +131,8 @@ export default async function UserDashboard() {
 							<h3>TITLE</h3>
 
 						<p>
-							Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-							Sed do eiusmod tempor incididunt ut labore.
+							Lorem ipsum dolor sit amet, consectetur adipiscing
+							elit. Sed do eiusmod tempor incididunt ut labore.
 						</p>
 
 						<span className="group-name">Group: Lorem</span>
@@ -143,11 +150,17 @@ export default async function UserDashboard() {
 				<h2 className="section-title">Archived Activities</h2>
 
 				<div className="activity-grid archived">
-					{[1,2,3,4].map((i) => (
-						<div key={i} className="activity-card small archived-card">
+					{[1, 2, 3, 4].map((i) => (
+						<div
+							key={i}
+							className="activity-card small archived-card"
+						>
 							<h3>TITLE</h3>
 
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+							<p>
+								Lorem ipsum dolor sit amet, consectetur
+								adipiscing elit.
+							</p>
 
 							<span className="activity-date">
 								DD.MM.YYYY - DD.MM.YYYY
@@ -156,7 +169,7 @@ export default async function UserDashboard() {
 					))}
 				</div>
 			</section>
-			
+
 			{/* PATTERN STRIP */}
 			<section className="pattern-strip">
 				<div className="pattern-strip-inner moving-pattern"></div>

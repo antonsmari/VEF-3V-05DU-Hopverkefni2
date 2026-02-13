@@ -2,7 +2,7 @@ import { requireAndGetUser } from "@/lib/auth/requireUser";
 import Image from "next/image";
 import Link from "next/link";
 
-export default async function(){
+export default async function UserProfile(){
     const user = await requireAndGetUser()
     
     return(
