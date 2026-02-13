@@ -1,6 +1,13 @@
 import Image from "next/image";
+import { requireUserId } from "@/lib/auth/requireUser";
+import { sumUserDebts } from "@/db/repo/userDebtsRepo";
+import { listUserGroups } from "@/db/repo/groupsRepo";
 
-export default function UserDashboard() {
+export default async function UserDashboard() {
+	const userId = await requireUserId();
+	const debts = await sumUserDebts(userId);
+	const groups = await listUserGroups(userId);
+
 	return (
 		<main className="dashboard">
 			{/* PROFILE */}
@@ -19,8 +26,8 @@ export default function UserDashboard() {
 
 					<p>
 						Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-						Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-						Ut enim ad minim veniam.
+						Sed do eiusmod tempor incididunt ut labore et dolore
+						magna aliqua. Ut enim ad minim veniam.
 					</p>
 				</div>
 			</section>
@@ -35,12 +42,12 @@ export default function UserDashboard() {
 				<div className="stats-box">
 					<div className="stat-item">
 						<h4>You owe:</h4>
-						<p>$123.45</p>
+						<p>{debts.totalOwes} isk</p>
 					</div>
 
 					<div className="stat-item">
 						<h4>You are owed:</h4>
-						<p>$456.78</p>
+						<p>{debts.totalOwed} isk</p>
 					</div>
 				</div>
 
@@ -59,27 +66,41 @@ export default function UserDashboard() {
 				<h2 className="section-title">Current Activities</h2>
 
 				<div className="activity-grid">
+					{groups.map((group) => (
+						<li key={group.id}>
+							<div className="activity-card">
+								<h3>
+									<a
+										href={`/group/${group.id}`}
+										key={group.id}
+									>
+										{group.name}
+									</a>
+								</h3>
+
+								<p>
+									Lorem ipsum dolor sit amet, consectetur
+									adipiscing elit. Sed do eiusmod tempor
+									incididunt ut labore.
+								</p>
+
+								<span className="group-name">
+									Group: {group.name}
+								</span>
+
+								<span className="activity-date">
+									DD.MM.YYYY - DD.MM.YYYY
+								</span>
+							</div>
+						</li>
+					))}
+
 					<div className="activity-card">
 						<h3>TITLE</h3>
 
 						<p>
-							Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-							Sed do eiusmod tempor incididunt ut labore.
-						</p>
-
-						<span className="group-name">Group: Lorem</span>
-
-						<span className="activity-date">
-							DD.MM.YYYY - DD.MM.YYYY
-						</span>
-					</div>
-
-					<div className="activity-card">
-						<h3>TITLE</h3>
-
-						<p>
-							Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-							Sed do eiusmod tempor incididunt ut labore.
+							Lorem ipsum dolor sit amet, consectetur adipiscing
+							elit. Sed do eiusmod tempor incididunt ut labore.
 						</p>
 
 						<span className="group-name">Group: Lorem</span>
@@ -96,11 +117,17 @@ export default function UserDashboard() {
 				<h2 className="section-title">Archived Activities</h2>
 
 				<div className="activity-grid archived">
-					{[1,2,3,4].map((i) => (
-						<div key={i} className="activity-card small archived-card">
+					{[1, 2, 3, 4].map((i) => (
+						<div
+							key={i}
+							className="activity-card small archived-card"
+						>
 							<h3>TITLE</h3>
 
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+							<p>
+								Lorem ipsum dolor sit amet, consectetur
+								adipiscing elit.
+							</p>
 
 							<span className="activity-date">
 								DD.MM.YYYY - DD.MM.YYYY
@@ -109,7 +136,7 @@ export default function UserDashboard() {
 					))}
 				</div>
 			</section>
-			
+
 			{/* PATTERN STRIP */}
 			<section className="pattern-strip">
 				<div className="pattern-strip-inner moving-pattern"></div>

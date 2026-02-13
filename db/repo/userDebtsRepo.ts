@@ -1,6 +1,6 @@
 import { db } from "@/db/schema";
 import { userDebts } from "@/db/schema/schema";
-import { and, eq, or, sql } from "drizzle-orm";
+import { and, eq, or, sql, inArray } from "drizzle-orm";
 
 export async function getUserDebt(args: {
 	debtorId: number;
@@ -65,4 +65,38 @@ export async function listUserDebts(userId: number) {
 		.select()
 		.from(userDebts)
 		.where(or(eq(userDebts.debtor, userId), eq(userDebts.debtee, userId)));
+}
+
+export async function listDebtsForUsers(userIds: number[]) {
+	if (userIds.length === 0) return [];
+
+	return await db
+		.select()
+		.from(userDebts)
+		.where(
+			and(
+				inArray(userDebts.debtor, userIds),
+				inArray(userDebts.debtee, userIds),
+			),
+		);
+}
+
+export async function sumUserDebts(userId: number) {
+	const debtSums = await db
+		.select({
+			totalOwes: sql<
+				string | null
+			>`SUM(CASE WHEN ${userDebts.debtor} = ${userId} THEN ${userDebts.amount} ELSE 0 END)`,
+			totalOwed: sql<
+				string | null
+			>`SUM(CASE WHEN ${userDebts.debtee} = ${userId} THEN ${userDebts.amount} ELSE 0 END)`,
+		})
+		.from(userDebts)
+		.where(or(eq(userDebts.debtor, userId), eq(userDebts.debtee, userId)));
+
+	const result = debtSums[0];
+	return {
+		totalOwes: result?.totalOwes ?? "0",
+		totalOwed: result?.totalOwed ?? "0",
+	};
 }
