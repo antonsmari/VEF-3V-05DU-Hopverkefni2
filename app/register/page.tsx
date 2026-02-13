@@ -17,31 +17,50 @@ export default async function Register() {
 			),
 		});
 	}
+	
 	return (
-		<div>
-			<Form formMethod="post" action={newUser}>
-				{/* put register information in a session of logged in users*/}
-				{/* reroutes to an enviroment for a logged in user*/}
-				<label htmlFor="name">Name:</label>
-				<input id="name" type="text" name="name" placeholder="Name" />
+		<div className="form-page">
+			<Form formMethod="post" action={newUser} className="form-card">
 
-				<label htmlFor="email">Email:</label>
-				<input
-					id="email"
-					type="email"
-					name="email"
-					placeholder="Email"
-				/>
+				<h2>Create Account</h2>
 
-				<label htmlFor="password">Password:</label>
-				<input
-					id="password"
-					type="password"
-					name="password"
-					placeholder="Password"
-				/>
+				<div className="form-group">
+					<label htmlFor="name">Name</label>
+					<input
+						id="name"
+						type="text"
+						name="name"
+						placeholder="Your name"
+						required
+					/>
+				</div>
 
-				<button type="submit">Submit</button>
+				<div className="form-group">
+					<label htmlFor="email">Email</label>
+					<input
+						id="email"
+						type="email"
+						name="email"
+						placeholder="Your email"
+						required
+					/>
+				</div>
+
+				<div className="form-group">
+					<label htmlFor="password">Password</label>
+					<input
+						id="password"
+						type="password"
+						name="password"
+						placeholder="Create a password"
+						required
+					/>
+				</div>
+
+				<div className="form-submit">
+					<button type="submit">Sign Up</button>
+				</div>
+
 			</Form>
 		</div>
 	);

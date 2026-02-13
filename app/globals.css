@@ -38,12 +38,16 @@ main {
 	margin: 0 auto;
 }
 
-div,
 section,
-form,
 input {
 	border-radius: 0 !important;
 }
+
+section,
+input {
+	border-radius: 0;
+}
+
 
 /* NAVIGATION */
 
@@ -567,4 +571,115 @@ button:hover {
 
 .archived-card {
 	background-color: var(--bg-main);
+}
+
+/*------------------------------*/
+/*            FORMS             */
+/*------------------------------*/
+
+.form-page {
+	min-height: 80vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 2rem 1rem;
+	background-color: var(--bg-main);
+}
+
+/* Main Form Card */
+
+.form-card {
+	width: 100%;
+	max-width: 520px;
+	background-color: var(--bg-section);
+	padding: 3rem 2.8rem;
+	border-radius: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 1.6rem;
+}
+
+/* Title */
+
+.form-card h2 {
+	text-align: center;
+	font-size: 2rem;
+	letter-spacing: 1px;
+	margin-bottom: 0.5rem;
+}
+
+/* Groups */
+
+.form-group {
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+}
+
+/* Labels */
+
+.form-group label {
+	font-size: 0.95rem;
+	opacity: 0.9;
+}
+
+/* Inputs */
+
+.form-group input,
+.form-group textarea {
+	width: 100%;
+	padding: 0.8rem 0.9rem;
+	border-radius: 8px;
+	border: none;
+	background-color: var(--bg-main);
+	color: var(--text-main);
+	font-size: 1rem;
+	transition: background-color 0.2s ease;
+}
+
+/* Textarea */
+
+.form-group textarea {
+	min-height: 100px;
+	resize: vertical;
+}
+
+/* Placeholder */
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+	opacity: 0.6;
+}
+
+/* Focus */
+
+.form-group input:focus,
+.form-group textarea:focus {
+	outline: none;
+	background-color: var(--bg-section-2);
+}
+
+/* Submit Area */
+
+.form-submit {
+	margin-top: 1.2rem;
+	display: flex;
+	justify-content: center;
+}
+
+/* Submit Button */
+
+.form-submit button {
+	width: 100%;
+	max-width: 240px;
+	.dashboard-btn {
+	background-color: var(--bg-section);
+	color: var(--text-main);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.dashboard-btn:hover {
+	background-color: var(--nav-bg);
+	color: var(--nav-hover);
+}
 }

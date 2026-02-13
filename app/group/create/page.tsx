@@ -34,40 +34,55 @@ export default function GroupCreate() {
     }
 
     return (
-        <div>
-            <Form action={newGroup} formMethod="POST">
-                <label htmlFor="title">Title for the group event</label>
-                <input 
-                    id="title" 
-                    name="title"
-                    type="text" 
-                    required
-                />
+        <div className="form-page">
+            <Form action={newGroup} formMethod="POST" className="form-card">
 
-                <label htmlFor="description">Description (optional)</label>
-                <textarea 
-                    id="description"
-                    name="description"
-                >
-                </textarea>
+                <h2>Create Group</h2>
 
-                <label htmlFor="start_date">Start date</label>
-                <input 
-                    id="start_date" 
-                    name="start_date"
-                    type="date" 
-                    required
-                />
+                <div className="form-group">
+                    <label htmlFor="title">Group Title</label>
+                    <input
+                        id="title"
+                        name="title"
+                        type="text"
+                        placeholder="Event name"
+                        required
+                    />
+                </div>
 
-                <label htmlFor="end_date">End date (optional)</label>
-                <input 
-                    id="end_date" 
-                    name="end_date"
-                    type="date" 
-                />
+                <div className="form-group">
+                    <label htmlFor="description">Description (Optional)</label>
+                    <textarea
+                        id="description"
+                        name="description"
+                        placeholder="Describe your event"
+                    />
+                </div>
 
-                <button type="submit">Submit</button>
+                <div className="form-group">
+                    <label htmlFor="start_date">Start Date</label>
+                    <input
+                        id="start_date"
+                        name="start_date"
+                        type="date"
+                        required
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="end_date">End Date (Optional)</label>
+                    <input
+                        id="end_date"
+                        name="end_date"
+                        type="date"
+                    />
+                </div>
+
+                <div className="form-submit">
+                    <button type="submit">Create Group</button>
+                </div>
+
             </Form>
         </div>
-    )
+    );
 }

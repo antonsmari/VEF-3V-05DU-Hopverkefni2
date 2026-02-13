@@ -39,26 +39,37 @@ export default function Login() {
 	}
 
 	return (
-		<div>
-			<Form formMethod="post" action={loginUser}>
-				{/* call in the function loginUser when the form is submitted */}
-				<label htmlFor="email">Email:</label>
-				<input
-					id="email"
-					type="email"
-					name="email"
-					placeholder="Email"
-				/>
+		<div className="form-page">
+			<Form formMethod="post" action={loginUser} className="form-card">
 
-				<label htmlFor="password">Password:</label>
-				<input
-					id="password"
-					type="password"
-					name="password"
-					placeholder="Password"
-				/>
+				<h2>Log In</h2>
 
-				<button type="submit">Submit</button>
+				<div className="form-group">
+					<label htmlFor="email">Email</label>
+					<input
+						id="email"
+						type="email"
+						name="email"
+						placeholder="Enter your email"
+						required
+					/>
+				</div>
+
+				<div className="form-group">
+					<label htmlFor="password">Password</label>
+					<input
+						id="password"
+						type="password"
+						name="password"
+						placeholder="Enter your password"
+						required
+					/>
+				</div>
+
+				<div className="form-submit">
+					<button type="submit">Log In</button>
+				</div>
+
 			</Form>
 		</div>
 	);
