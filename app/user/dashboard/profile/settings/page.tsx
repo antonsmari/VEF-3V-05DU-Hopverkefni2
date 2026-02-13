@@ -22,7 +22,7 @@ export default async function userSettings(){
             image: image
         });
 
-        redirect("/user/dashboard/profile")
+        redirect("/user/dashboard/")
     }
     
     return(
