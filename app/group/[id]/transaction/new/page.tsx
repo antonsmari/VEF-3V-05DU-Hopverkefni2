@@ -21,6 +21,7 @@ export default async function TransactionNew({
 
 		const participants = memberIds.map((memberId) => ({
 			userId: memberId,
+			included: !!formData.get(`groupMemberInclude[${memberId}]`),
 			paidAmount: formData.get(`groupMemberInclude[${memberId}]`)
 				? parseFloat(
 						formData.get(`groupMemberPaid[${memberId}]`) as string,
@@ -51,15 +52,11 @@ export default async function TransactionNew({
 			occurredAt = new Date();
 		}
 
-		const participantsWithAmount = participants.map((participant) => ({
-			...participant,
-			paidAmount: participant.paidAmount.toString(),
-		}));
-
-		const participantsForCalculation: Participant[] =
-			participantsWithAmount.map((p) => ({
+		const participantsForCalculation: Participant[] = participants
+			.filter((p) => p.included)
+			.map((p) => ({
 				userId: p.userId,
-				paidAmount: parseFloat(p.paidAmount),
+				paidAmount: p.paidAmount,
 			}));
 
 		const transaction = await createTransaction({
@@ -69,7 +66,10 @@ export default async function TransactionNew({
 			description: formData.get("description") as string,
 			occurredAt: occurredAt,
 			totalAmount: totalAmount.toString(),
-			participants: participantsWithAmount,
+			participants: participants.map((participant) => ({
+				...participant,
+				paidAmount: participant.paidAmount.toString(),
+			})),
 		});
 
 		if (!transaction) {
@@ -125,8 +125,8 @@ export default async function TransactionNew({
 						});
 
 						// Flip: new debt goes opposite direction
-						netDebtorId = debt.debteeId;
-						netDebteeId = debt.debtorId;
+						netDebtorId = priorDebt.debtee;
+						netDebteeId = priorDebt.debtor;
 						netAmountMinor = Math.abs(netAmountMinor);
 					} else {
 						// Old debt direction still wins
