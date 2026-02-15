@@ -15,6 +15,25 @@ export default async function UserDashboard() {
 	const groups = await listUserGroups(user.id)
 	// get the groups that the user is a part of via their user id
 
+	const today = new Date()
+	// get the current date
+
+	const activeGroups = groups.filter((group) => {
+	// filter out the groups that are active
+		if (!group.endDate) return true;
+		// if an endDate for the group does not exist the group will be filtered with active groups
+		return new Date(group.endDate) >= today;
+		// filter the groups that have an end date that is greater than the current date
+	})
+
+	const archivedGroups = groups.filter((group) => {
+	// filter out the groups that have passed
+		if (!group.endDate) return false;
+		// if and end date for the group does not exist it will not be filtered into the inactive groups category
+		return new Date(group.endDate) < today;
+		// filter out the groups that have an end date that is lesser than the current date
+	})
+
 	return (
 		<main className="dashboard">
 			{/* PROFILE */}
@@ -76,7 +95,6 @@ export default async function UserDashboard() {
 						<Link href="/group/create">
 							<button className="dashboard-btn">Create Group</button>
 						</Link>
-						<button className="dashboard-btn">Join Group</button>
 					</div>
 				</div>
 			</section>
@@ -86,62 +104,27 @@ export default async function UserDashboard() {
 				<h2 className="section-title">Current Activities</h2>
 				{/* Display a list of the groups that the user is in */}
 				<div className="activity-grid">
-					<ul>
-						{groups.map((group) => (
-							<li key={group.id}>
-								<div className="activity-card">
-									{/* go to the page for a specific group */}
-									<Link href={`/group/${group.id}`}>
-              							<strong>{group.name}</strong>
-            						</Link>
-									<h3>{group.name}</h3>
+					{activeGroups.map((group) => (
+						<Link href={`/group/${group.id}`} key={group.id}>
+							<div className="activity-card">
+							{/* go to the page for a specific group */}
+									
+								<h3>{group.name}</h3>
 
-									{group.description && (
-										<p>{group.description}</p>
+								{group.description && (
+									<p>{group.description}</p>
+								)}
+
+								<span className="activity-date">
+									{/* display the start and end date of groups on the right format if they exist */}
+									<h4>start: {new Date(group.startDate).toLocaleDateString('is-IS')}</h4>
+									{group.endDate && (
+										<h4>{new Date(group.endDate).toLocaleDateString('is-IS')}</h4>
 									)}
-
-                  <span className="group-name">
-                    Group: {group.name}
-                  </span>
-
-									<span className="activity-date">
-										DD.MM.YYYY - DD.MM.YYYY
-									</span>
-								</div>
-							</li>
-						))}
-					</ul>
-						{/*
-						<div className="activity-card">
-							<h3>TITLE</h3>
-
-							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-								Sed do eiusmod tempor incididunt ut labore.
-							</p>
-
-							<span className="group-name">Group: Lorem</span>
-
-							<span className="activity-date">
-								DD.MM.YYYY - DD.MM.YYYY
-							</span>
-						</div>
-
-						<div className="activity-card">
-							<h3>TITLE</h3>
-
-						<p>
-							Lorem ipsum dolor sit amet, consectetur adipiscing
-							elit. Sed do eiusmod tempor incididunt ut labore.
-						</p>
-
-						<span className="group-name">Group: Lorem</span>
-
-						<span className="activity-date">
-							DD.MM.YYYY - DD.MM.YYYY
-						</span>
-					</div>
-					*/}
+								</span>
+							</div>
+						</Link>
+				    ))}
 				</div>
 			</section>
 
@@ -150,22 +133,26 @@ export default async function UserDashboard() {
 				<h2 className="section-title">Archived Activities</h2>
 
 				<div className="activity-grid archived">
-					{[1, 2, 3, 4].map((i) => (
-						<div
-							key={i}
-							className="activity-card small archived-card"
-						>
-							<h3>TITLE</h3>
+					{archivedGroups.map((group) => (
+						<Link href={`/group/${group.id}`} key={group.id}>
+							<div className="activity-card">
+							{/* go to the page for a specific group */}
+									
+								<h3>{group.name}</h3>
 
-							<p>
-								Lorem ipsum dolor sit amet, consectetur
-								adipiscing elit.
-							</p>
+								{group.description && (
+									<p>{group.description}</p>
+								)}
 
-							<span className="activity-date">
-								DD.MM.YYYY - DD.MM.YYYY
-							</span>
-						</div>
+								<span className="activity-date">
+								{/* display the start and end date of groups on the right format if they exist */}
+									<h4>start: {new Date(group.startDate).toLocaleDateString('is-IS')}</h4>
+									{group.endDate && (
+										<h4>{new Date(group.endDate).toLocaleDateString('is-IS')}</h4>
+									)}
+								</span>
+							</div>
+						</Link>
 					))}
 				</div>
 			</section>
