@@ -1,3 +1,5 @@
+import { listDebtsForUsers, setUserDebt } from "@/db/repo/userDebtsRepo";
+
 export type Participant = {
 	userId: number;
 	paidAmount: number;
@@ -124,4 +126,75 @@ export function calculateDebts(
 
 	// Step 10: Return the list of transfers
 	return transfers;
+}
+
+export async function settleDebts(
+	debts: DebtTransfer[],
+	participantsUserIdList: number[],
+) {
+	const getPriorDebts = await listDebtsForUsers(participantsUserIdList);
+
+	for (const debt of debts) {
+		// Step 1: Find any existing debt between the same two users (regardless of direction)
+		const priorDebt = getPriorDebts.find(
+			(d) =>
+				(d.debtor === debt.debtorId && d.debtee === debt.debteeId) ||
+				(d.debtor === debt.debteeId && d.debtee === debt.debtorId),
+		);
+
+		// Step 2: Calculate the new net debt amount and direction
+		// based on the prior debt and the new debt transfer
+		const priorAmountMinor = priorDebt
+			? Math.round(parseFloat(priorDebt.amount) * 100)
+			: 0;
+		const debtAmountMinor = Math.round(parseFloat(debt.amount) * 100);
+
+		let netAmountMinor: number;
+		let netDebtorId: number;
+		let netDebteeId: number;
+
+		// If the prior debt is in the same direction as the new debt, we simply add the amounts
+		// Otherwise, we subtract to find the new net debt and its direction
+		if (priorDebt?.debtor === debt.debtorId) {
+			netAmountMinor = priorAmountMinor + debtAmountMinor;
+			netDebtorId = debt.debtorId;
+			netDebteeId = debt.debteeId;
+		} else if (priorDebt) {
+			netAmountMinor = priorAmountMinor - debtAmountMinor;
+
+			if (netAmountMinor <= 0) {
+				// Clear old debt
+				await setUserDebt({
+					debtorId: priorDebt.debtor,
+					debteeId: priorDebt.debtee,
+					amount: "0",
+				});
+
+				// Flip: new debt goes opposite direction
+				netDebtorId = priorDebt.debtee;
+				netDebteeId = priorDebt.debtor;
+				netAmountMinor = Math.abs(netAmountMinor);
+			} else {
+				// Old debt direction still wins
+				netDebtorId = priorDebt.debtor;
+				netDebteeId = priorDebt.debtee;
+			}
+		} else {
+			// No prior debt
+			netAmountMinor = debtAmountMinor;
+			netDebtorId = debt.debtorId;
+			netDebteeId = debt.debteeId;
+		}
+
+		const netAmount = (Math.abs(netAmountMinor) / 100).toFixed(2);
+
+		// Step 3: Update the database with the new net debt amount and direction
+		if (netAmountMinor > 0) {
+			await setUserDebt({
+				debtorId: netDebtorId,
+				debteeId: netDebteeId,
+				amount: netAmount,
+			});
+		}
+	}
 }
