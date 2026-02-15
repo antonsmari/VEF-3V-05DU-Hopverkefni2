@@ -50,8 +50,11 @@ export default async function Group({
 			<ul>
 				{groupTransactions.map((transaction) => (
 					<li key={transaction.id}>
-						{transaction.title} - {transaction.totalAmount}{" "}
-						(Occurred at: {transaction.occurredAt.toDateString()})
+						<Link href={`/group/${group.id}/transaction/${transaction.id}`}>
+						{/* if the transaction is clicked user goes to a page that shows more details about the transaction */}
+							{transaction.title} - {transaction.totalAmount}{" "}
+							(Occurred at: {transaction.occurredAt.toDateString()})
+						</Link>
 					</li>
 				))}
 			</ul>
