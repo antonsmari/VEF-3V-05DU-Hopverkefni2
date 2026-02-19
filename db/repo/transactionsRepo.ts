@@ -1,5 +1,5 @@
 import { db } from "@/db/schema";
-import { transactions, transactionParticipants } from "@/db/schema/schema";
+import { transactions, transactionParticipants, users } from "@/db/schema/schema";
 import { eq, and } from "drizzle-orm";
 
 export async function createTransaction(args: {
@@ -96,8 +96,18 @@ export async function deleteTransaction(id: number) {
 
 export async function listParticipants(transactionId: number) {
 	return await db
-		.select()
+		.select({
+			userId: transactionParticipants.userId,
+			paidAmount: transactionParticipants.paidAmount,
+			displayName: users.displayName
+			// get the name of the user in the list
+		})
 		.from(transactionParticipants)
+		.innerJoin(
+			users,
+			eq(transactionParticipants.userId, users.id)
+		)
+		// join a part of the users table into the list of participants table as there is not a field for the user name in the list participants table
 		.where(eq(transactionParticipants.transactionId, transactionId));
 }
 
