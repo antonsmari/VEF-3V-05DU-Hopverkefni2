@@ -1,6 +1,6 @@
 import { db } from "@/db/schema";
 import { userDebts } from "@/db/schema/schema";
-import { and, eq, or, sql, inArray } from "drizzle-orm";
+import { ne, and, eq, or, sql, inArray } from "drizzle-orm";
 
 export async function getUserDebt(args: {
 	debtorId: number;
@@ -77,6 +77,7 @@ export async function listDebtsForUsers(userIds: number[]) {
 			and(
 				inArray(userDebts.debtor, userIds),
 				inArray(userDebts.debtee, userIds),
+				ne(userDebts.amount, "0"),
 			),
 		);
 }

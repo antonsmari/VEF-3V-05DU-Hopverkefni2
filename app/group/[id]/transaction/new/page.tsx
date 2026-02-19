@@ -78,12 +78,12 @@ export default async function TransactionNew({
 		if (!transaction) {
 			throw new Error("Failed to create transaction");
 		} else {
-			const debts = calculateDebts(participantsForCalculation);
+			const debts = await calculateDebts(participantsForCalculation);
 			const participantsUserIdList = participantsForCalculation.map(
 				(participant) => participant.userId,
 			);
 
-			settleDebts(debts, participantsUserIdList);
+			await settleDebts(debts, participantsUserIdList);
 		}
 
 		redirect(`/group/${id}`);
