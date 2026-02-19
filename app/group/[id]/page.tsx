@@ -39,10 +39,12 @@ export default async function Group({
 			<h2>Members:</h2>
 			<ul>
 				{groupMembers.map((member) => (
+					<Link href={`/view/${member.users.id}`}>
 					<li key={member.users.id}>
 						{member.users.displayName} ({member.users.email}) -{" "}
 						{member.group_members.role}
 					</li>
+					</Link>
 				))}
 			</ul>
 
