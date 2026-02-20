@@ -22,7 +22,7 @@ export default async function generateInvite({
         redirect("user/dashboard")
         // if a group with groupId is not found, user is redirected to user dashboard
     }
-    const inviteUrl = `localhost:3000/group/${groupId}/invite/${group.inviteCode}`;
+    const inviteUrl = `evently-jet.vercel.app/group/${groupId}/invite/${group.inviteCode}`;
     // build the invite link where the invite code is the last to make it specific to each group
 
     return(
