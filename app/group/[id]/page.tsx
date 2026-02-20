@@ -7,15 +7,12 @@ export default async function Group({
 	params,
 }: {
 	params: Promise<{ id: string }>;
-
 }) {
-	
 	const { id } = await params;
 
 	if (isNaN(Number(id))) {
 		redirect("/user/dashboard");
 	}
-	
 
 	const group = await getGroupById(Number(id));
 	const groupMembers = await listGroupMembers(Number(id));
@@ -39,12 +36,12 @@ export default async function Group({
 			<h2>Members:</h2>
 			<ul>
 				{groupMembers.map((member) => (
-					<Link href={`/view/${member.users.id}`}>
 					<li key={member.users.id}>
-						{member.users.displayName} ({member.users.email}) -{" "}
-						{member.group_members.role}
+						<Link href={`/view/${member.users.id}`}>
+							{member.users.displayName} ({member.users.email}) -{" "}
+							{member.group_members.role}
+						</Link>
 					</li>
-					</Link>
 				))}
 			</ul>
 
@@ -52,10 +49,13 @@ export default async function Group({
 			<ul>
 				{groupTransactions.map((transaction) => (
 					<li key={transaction.id}>
-						<Link href={`/group/${group.id}/transaction/${transaction.id}`}>
-						{/* if the transaction is clicked user goes to a page that shows more details about the transaction */}
+						<Link
+							href={`/group/${group.id}/transaction/${transaction.id}`}
+						>
+							{/* if the transaction is clicked user goes to a page that shows more details about the transaction */}
 							{transaction.title} - {transaction.totalAmount}{" "}
-							(Occurred at: {transaction.occurredAt.toDateString()})
+							(Occurred at:{" "}
+							{transaction.occurredAt.toDateString()})
 						</Link>
 					</li>
 				))}
