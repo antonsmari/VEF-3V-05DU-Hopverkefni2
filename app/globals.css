@@ -104,6 +104,35 @@ nav {
 	color: var(--nav-hover);
 }
 
+/* Logout button styled like nav link */
+
+.logout-form {
+	width: 100%;
+}
+
+.logout-form button {
+	all: unset;
+	width: 100%;
+	display: block;
+	padding: 0.75rem 0;
+	color: var(--nav-text);
+	font-weight: 500;
+	cursor: pointer;
+	transition: color 0.2s ease;
+	font-size: 1.2rem;
+	text-align: left;
+}
+
+.logout-form button:hover {
+	color: var(--nav-hover);
+}
+
+@media (max-width: 767px) {
+	.logout-form button {
+		padding: 0.75rem 2rem;
+	}
+}
+
 /* HERO */
 
 .hero {
