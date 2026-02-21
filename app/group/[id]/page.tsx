@@ -1,4 +1,5 @@
-import { getGroupById, listGroupMembers, getGroupMember } from "@/db/repo/groupsRepo";
+import { getGroupById, listGroupMembers, getGroupMember, removeMemberFromGroup
+ } from "@/db/repo/groupsRepo";
 import { listTransactionsForGroup } from "@/db/repo/transactionsRepo";
 import { requireAndGetUser } from "@/lib/auth/requireUser";
 import Link from "next/link";
@@ -54,6 +55,11 @@ export default async function Group({
 							{member.users.displayName} ({member.users.email}) -{" "}
 							{member.group_members.role}
 						</Link>
+
+						{isAdmin && (
+						// if the user on the page is admin they can click on a link to a page that lets them remove other members form a group
+							<Link href={`/group/${group.id}/confirm/${member.users.id}`}>Remove Member</Link>
+						)}
 					</li>
 				))}
 			</ul>
