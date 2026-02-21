@@ -70,33 +70,31 @@ export default async function RootLayout({
 							{user ? (
 								<>
 									<li>
-										<Link href="/user/dashboard">
-											Dashboard
-										</Link>
+										<Link href="/user/dashboard">Dashboard</Link>
 									</li>
+
 									<li>
-										<Link href="/user/payments">
-											Payments
-										</Link>
+										<Link href="/user/payments">Payments</Link>
 									</li>
+
 									<li>
-										<Form
-											action={Logout}
-											className="logout-form"
-										>
-											<button
-												type="submit"
-												className="logout-button"
-											>
+										<Form action={Logout} className="logout-form">
+											<button type="submit" className="nav-link-button">
 												Logout
 											</button>
 										</Form>
 									</li>
 								</>
 							) : (
-								<li>
-									<Link href="/login">Login</Link>
-								</li>
+								<>
+									<li>
+										<Link href="/login">Login</Link>
+									</li>
+
+									<li>
+										<Link href="/register">Register</Link>
+									</li>
+								</>
 							)}
 						</div>
 					</ul>
