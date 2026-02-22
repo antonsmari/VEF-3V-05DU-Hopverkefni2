@@ -74,7 +74,7 @@ export default async function RootLayout({
 									</li>
 
 									<li>
-										<Link href="/user/payments">Payments</Link>
+										<Link href="/user/dashboard/profile/settings">Settings</Link>
 									</li>
 
 									<li>
