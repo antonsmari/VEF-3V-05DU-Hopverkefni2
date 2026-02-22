@@ -147,6 +147,23 @@ export async function listGroupMembers(groupId: number) {
 		.where(eq(groupMembers.groupId, groupId));
 }
 
+export async function getGroupMember(args: {
+// get a member from a specific group via user their user id and the group id
+	groupId: number,
+	userId: number
+}) {
+	const result = await db
+		.select()
+		.from(groupMembers)
+		.where(
+			and(
+				eq(groupMembers.groupId, args.groupId),
+				eq(groupMembers.userId, args.userId)
+			)
+		);
+	return result[0] ?? null;
+}
+
 export async function listUserGroups(userId: number) {
 	return await db
 		.select({

@@ -1,5 +1,7 @@
-import { getGroupById, listGroupMembers } from "@/db/repo/groupsRepo";
+import { getGroupById, listGroupMembers, getGroupMember, removeMemberFromGroup
+ } from "@/db/repo/groupsRepo";
 import { listTransactionsForGroup } from "@/db/repo/transactionsRepo";
+import { requireAndGetUser } from "@/lib/auth/requireUser";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -17,6 +19,18 @@ export default async function Group({
 	const group = await getGroupById(Number(id));
 	const groupMembers = await listGroupMembers(Number(id));
 	const groupTransactions = await listTransactionsForGroup(Number(id));
+
+	const user = await requireAndGetUser();
+	// get the user that is viewing the site
+
+	const membership = await getGroupMember({
+	// get the member inside the group so we can reference their membership
+		groupId: Number(id),
+		userId: user.id
+	})
+
+	const isAdmin = membership?.role === "admin";
+	// declare an admin if the user on the side has the role admin in the group
 
 	if (!group || !groupMembers) {
 		redirect("/user/dashboard");
@@ -41,6 +55,11 @@ export default async function Group({
 							{member.users.displayName} ({member.users.email}) -{" "}
 							{member.group_members.role}
 						</Link>
+
+						{isAdmin && (
+						// if the user on the page is admin they can click on a link to a page that lets them remove other members form a group
+							<Link href={`/group/${group.id}/confirm/${member.users.id}`}>Remove Member</Link>
+						)}
 					</li>
 				))}
 			</ul>
@@ -60,6 +79,13 @@ export default async function Group({
 					</li>
 				))}
 			</ul>
+
+			{/* if an admin is on the page they can click on a link that let's them update the group information */}
+			{isAdmin && (
+				<Link href={`/group/${group.id}/edit`}>
+					update group details
+				</Link>
+			)}
 		</div>
 	);
 }
