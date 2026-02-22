@@ -95,6 +95,9 @@ export default async function UserDashboard() {
 						<Link href="/group/create">
 							<button className="dashboard-btn">Create Group</button>
 						</Link>
+						<Link href="/group/join">
+		  					<button className="dashboard-btn">Join Group</button>
+						</Link>
 					</div>
 				</div>
 			</section>

@@ -1,4 +1,5 @@
-import { generateGroupInviteCode } from "@/db/repo/groupsRepo";
+import { generateGroupInviteCode, getGroupMember } from "@/db/repo/groupsRepo";
+import { requireAndGetUser } from "@/lib/auth/requireUser";
 import { redirect } from "next/navigation";
 
 export default async function generateInvite({
@@ -10,8 +11,22 @@ export default async function generateInvite({
 
     const { id } = await params;
 
+    const user = await requireAndGetUser();
+    // get the user that is viewing the site
+    
+    const membership = await getGroupMember({
+    // get the member inside the group so we can reference their membership
+         groupId: Number(id),
+        userId: user.id
+    })
+
+    if (membership?.role !== "admin") {
+    // thow an error if the group member is not an admin
+        throw new Error("unautharized")
+    }
+
     const groupId = Number(id);
-     // get the group id that is marked as an id params in the url
+    // get the group id that is marked as an id params in the url
     if (Number.isNaN(groupId)) {
         redirect("/user/dashboard");
     }
@@ -22,14 +37,6 @@ export default async function generateInvite({
         redirect("user/dashboard")
         // if a group with groupId is not found, user is redirected to user dashboard
     }
-    const inviteUrl = `localhost:3000/group/${groupId}/invite/${group.inviteCode}`;
-    // build the invite link where the invite code is the last to make it specific to each group
 
-    return(
-        <div>
-            <h2>Invite link</h2>
-            <p>Share this to invite members to your group</p>
-            <div>{inviteUrl}</div>
-        </div>
-    )
+    redirect(`/group/${group.id}/invite/viewInvite`)
 }

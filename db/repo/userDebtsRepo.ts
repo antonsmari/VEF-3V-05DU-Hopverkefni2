@@ -69,7 +69,6 @@ export async function listUserDebts(userId: number) {
 
 export async function listDebtsForUsers(userIds: number[]) {
 	if (userIds.length === 0) return [];
-
 	return await db
 		.select()
 		.from(userDebts)
