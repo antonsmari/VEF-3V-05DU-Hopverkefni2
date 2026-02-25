@@ -1,13 +1,31 @@
-import Form from "next/form";
+import { RegisterForm } from "./RegisterForm";
 import { createUser } from "@/db/repo/usersRepo";
 import bcrypt from "bcryptjs";
-import { requireUserId } from "@/lib/auth/requireUser";
+import { ToastError } from "@/lib/errors/ToastError";
+import { z } from "zod";
+
+const registerSchema = z.object({
+	name: z.string().min(1, "Name is required").trim(),
+	email: z.string().email("Invalid email format"),
+	password: z.string().min(6, "Password must be at least 6 characters long"),
+});
 
 export default async function Register() {
-	//const id = await requireUserId();
-
 	async function newUser(formData: FormData) {
 		"use server";
+
+		const data = {
+			name: formData.get("name"),
+			email: formData.get("email"),
+			password: formData.get("password"),
+		};
+
+		const result = registerSchema.safeParse(data);
+
+		if (!result.success) {
+			throw new ToastError(result.error?.issues[0].message);
+		}
+
 		createUser({
 			displayName: formData.get("name") as string,
 			email: formData.get("email") as string,
@@ -17,51 +35,6 @@ export default async function Register() {
 			),
 		});
 	}
-	
-	return (
-		<div className="form-page">
-			<Form formMethod="post" action={newUser} className="form-card">
 
-				<h2>Create Account</h2>
-
-				<div className="form-group">
-					<label htmlFor="name">Name</label>
-					<input
-						id="name"
-						type="text"
-						name="name"
-						placeholder="Your name"
-						required
-					/>
-				</div>
-
-				<div className="form-group">
-					<label htmlFor="email">Email</label>
-					<input
-						id="email"
-						type="email"
-						name="email"
-						placeholder="Your email"
-						required
-					/>
-				</div>
-
-				<div className="form-group">
-					<label htmlFor="password">Password</label>
-					<input
-						id="password"
-						type="password"
-						name="password"
-						placeholder="Create a password"
-						required
-					/>
-				</div>
-
-				<div className="form-submit">
-					<button type="submit">Sign Up</button>
-				</div>
-
-			</Form>
-		</div>
-	);
+	return <RegisterForm action={newUser} />;
 }

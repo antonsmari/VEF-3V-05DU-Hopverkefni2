@@ -2,7 +2,6 @@ import { db } from "@/db/schema";
 import { groups, groupMembers, users } from "@/db/schema/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { generateInviteCode } from "@/lib/invite-code";
-import { MySqlDateBaseColumn } from "drizzle-orm/mysql-core/columns/date.common";
 // call a function that generates a random invite code
 
 export async function createGroup(args: {
@@ -148,9 +147,9 @@ export async function listGroupMembers(groupId: number) {
 }
 
 export async function getGroupMember(args: {
-// get a member from a specific group via user their user id and the group id
-	groupId: number,
-	userId: number
+	// get a member from a specific group via user their user id and the group id
+	groupId: number;
+	userId: number;
 }) {
 	const result = await db
 		.select()
@@ -158,8 +157,8 @@ export async function getGroupMember(args: {
 		.where(
 			and(
 				eq(groupMembers.groupId, args.groupId),
-				eq(groupMembers.userId, args.userId)
-			)
+				eq(groupMembers.userId, args.userId),
+			),
 		);
 	return result[0] ?? null;
 }
@@ -186,40 +185,51 @@ export async function listUserGroups(userId: number) {
 }
 
 export async function generateGroupInviteCode(groupId: number) {
-// generate an invite code for a specific group by their id
-// has the option to me empty
-	const code = generateInviteCode();
-	// call an imported function that generates an invite code
+	// generate an invite code for a specific group by their id
+	// has the option to me empty
+	let code: string;
+	const maxAttempts = 5;
 
-	const updated = await db
-		.update(groups)
-		// update the groups table
-		.set({
-			inviteCode: code,
-			inviteCodeDisabled: false,
-			updatedAt: new Date(),
-		})
-		// set new values for the invite code, wether the invite code is addapted and when the groups table was last updated
-		.where(eq(groups.id, groupId))
-		// do this in the right group that wass called by the id
-		.returning();
+	let attempts = 0;
+	while (attempts < maxAttempts) {
+		code = generateInviteCode();
+		// call an imported function that generates an invite code
 
-	return updated[0] ?? null;
-	// if an error occured then run the code as null
+		try {
+			const updated = await db
+				.update(groups)
+				// update the groups table
+				.set({
+					inviteCode: code,
+					inviteCodeDisabled: false,
+					updatedAt: new Date(),
+				})
+				// set new values for the invite code, wether the invite code is addapted and when the groups table was last updated
+				.where(eq(groups.id, groupId))
+				// do this in the right group that wass called by the id
+				.returning();
+
+			return updated[0] ?? null;
+			// if an error occured then run the code as null
+		} catch (error) {
+			attempts++;
+		}
+	}
+	return null;
 }
 
-export async function getGroupByInviteCode(code: string){
-// function that located the group with a specific invite code
-// will be called when a user clickes the link with an invite code to find the right group to add them into
+export async function getGroupByInviteCode(code: string) {
+	// function that located the group with a specific invite code
+	// will be called when a user clickes the link with an invite code to find the right group to add them into
 	const result = await db
 		.select()
 		.from(groups)
 		.where(
 			and(
 				eq(groups.inviteCode, code),
-				eq(groups.inviteCodeDisabled, false)
+				eq(groups.inviteCodeDisabled, false),
 				// locate group that has the same invite code as the code that the function recieved
-			)
+			),
 		);
 	return result[0] ?? null;
 }

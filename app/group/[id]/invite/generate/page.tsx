@@ -1,35 +1,40 @@
-import { generateGroupInviteCode } from "@/db/repo/groupsRepo";
+import { generateGroupInviteCode, getGroupMember } from "@/db/repo/groupsRepo";
 import { redirect } from "next/navigation";
+import { requireAndGetUser } from "@/lib/auth/requireUser";
 
-export default async function generateInvite({
+export default async function GenerateInvite({
 	params,
 }: {
 	params: Promise<{ id: string }>;
-    // the id string is in the url
+	// the id string is in the url
 }) {
+	const { id } = await params;
+	// get the group id from the url
 
-    const { id } = await params;
+	const user = await requireAndGetUser();
+	// get the logged in user
 
-    const groupId = Number(id);
-     // get the group id that is marked as an id params in the url
-    if (Number.isNaN(groupId)) {
-        redirect("/user/dashboard");
-    }
+	if (!id) {
+		redirect("/user/dashboard");
+	}
 
-    const group = await generateGroupInviteCode(groupId)
-    // get the group with the groupId and add an invite code to it
-    if (!group){
-        redirect("user/dashboard")
-        // if a group with groupId is not found, user is redirected to user dashboard
-    }
-    const inviteUrl = `evently-jet.vercel.app/group/${groupId}/invite/${group.inviteCode}`;
-    // build the invite link where the invite code is the last to make it specific to each group
+	const groupId = Number(id);
+	// get the group id that is marked as an id params in the url
+	if (Number.isNaN(groupId)) {
+		redirect("/user/dashboard");
+	}
 
-    return(
-        <div>
-            <h2>Invite link</h2>
-            <p>Share this to invite members to your group</p>
-            <div>{inviteUrl}</div>
-        </div>
-    )
+	const membership = await getGroupMember({ groupId, userId: user.id });
+	// get the membership of the user in the group to check if they are an admin
+
+	if (membership?.role !== "admin") {
+		redirect("/user/dashboard");
+	}
+	// if the user is not an admin in the group they are redirected to the user dashboard
+
+	await generateGroupInviteCode(groupId);
+	// get the group with the groupId and add an invite code to it
+
+	redirect(`/group/${groupId}/invite/view`);
+	// redirect to the page where the user can view the invite code and link for the group
 }
