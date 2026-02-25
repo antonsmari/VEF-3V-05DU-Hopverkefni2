@@ -15,3 +15,8 @@ export async function requireAndGetUser() {
 	if (!user) redirect("/login");
 	return user;
 }
+
+export async function isLoggedIn() {
+	const session = await getDbSession();
+	return !!session;
+}

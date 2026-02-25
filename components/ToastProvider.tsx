@@ -7,7 +7,9 @@ import {
 	ReactNode,
 	useCallback,
 	useMemo,
+	useEffect,
 } from "react";
+import { usePathname } from "next/navigation";
 
 type ToastContextType = {
 	showToast: (message: string, type?: "error" | "success") => void;
@@ -38,6 +40,14 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 	const closeToast = useCallback(() => {
 		setToast(null);
 	}, []);
+
+	const pathname = usePathname();
+
+	useEffect(() => {
+		Promise.resolve().then(() => {
+			setToast(null);
+		});
+	}, [pathname]);
 
 	const value = useMemo(() => ({ showToast }), [showToast]);
 

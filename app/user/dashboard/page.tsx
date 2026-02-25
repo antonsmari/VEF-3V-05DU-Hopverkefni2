@@ -1,10 +1,22 @@
 import { requireAndGetUser } from "@/lib/auth/requireUser";
-import { listUserGroups } from "@/db/repo/groupsRepo";
+import { getGroupByInviteCode, listUserGroups } from "@/db/repo/groupsRepo";
 import { sumUserDebts } from "@/db/repo/userDebtsRepo";
 import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { Activities } from "@/components/Activities";
 
 export default async function UserDashboard() {
+	async function inviteCode(formData: FormData) {
+		"use server";
+
+		const group = await getGroupByInviteCode(
+			formData.get("inviteCode") as string,
+		);
+
+		redirect(`/group/${group.id}/invite/${formData.get("inviteCode")}`);
+	}
+
 	const user = await requireAndGetUser();
 	const debts = await sumUserDebts(user.id);
 	const groups = await listUserGroups(user.id);
@@ -36,7 +48,9 @@ export default async function UserDashboard() {
 						height={260}
 						alt="profile_picture"
 					/>
-					{user.pronouns && <h3>{user.pronouns}</h3>}
+					<div className="centered-text">
+						{user.pronouns && <h3>{user.pronouns}</h3>}
+					</div>
 				</div>
 
 				<div className="profile-info">
@@ -64,11 +78,19 @@ export default async function UserDashboard() {
 				</div>
 
 				<div className="actions-box">
-					<h2>ACTIVITIES</h2>
+					<h2 className="shadow-text">ACTIVITIES</h2>
 
 					<div className="action-buttons">
 						<Link href="/group/create">
-							<button className="dashboard-btn">Create Group</button>
+							<button className="dashboard-btn">
+								Create Group
+							</button>
+						</Link>
+
+						<Link href="/group/join">
+							<button className="dashboard-btn">
+								Join Group
+							</button>
 						</Link>
 					</div>
 				</div>
@@ -76,66 +98,20 @@ export default async function UserDashboard() {
 
 			{/* CURRENT */}
 			<section className="dashboard-section active-section">
-				<h2 className="section-title">Current Activities</h2>
+				<h2 className="section-title shadow-text">
+					Current Activities
+				</h2>
 
-				<div className="activity-grid">
-					{activeGroups.length === 0 ? (
-						<div className="empty-state">
-							No active groups yet.
-						</div>
-					) : (
-						activeGroups.map((group) => (
-							<Link href={`/group/${group.id}`} key={group.id} className="card-link">
-								<div className="activity-card">
-									<h3>{group.name}</h3>
-									{group.description && <p>{group.description}</p>}
-
-									<div className="activity-date">
-										<span>{new Date(group.startDate).toLocaleDateString("is-IS")}</span>
-										{group.endDate && (
-											<span>
-												{" - "}
-												{new Date(group.endDate).toLocaleDateString("is-IS")}
-											</span>
-										)}
-									</div>
-								</div>
-							</Link>
-						))
-					)}
-				</div>
+				<Activities groups={activeGroups} archived={false} />
 			</section>
 
 			{/* ARCHIVED */}
 			<section className="dashboard-section archived-section">
-				<h2 className="section-title">Archived Activities</h2>
+				<h2 className="section-title shadow-text">
+					Archived Activities
+				</h2>
 
-				<div className="activity-grid">
-					{archivedGroups.length === 0 ? (
-						<div className="empty-state">
-							No archived groups yet.
-						</div>
-					) : (
-						archivedGroups.map((group) => (
-							<Link href={`/group/${group.id}`} key={group.id} className="card-link">
-								<div className="activity-card archived-card">
-									<h3>{group.name}</h3>
-									{group.description && <p>{group.description}</p>}
-
-									<div className="activity-date">
-										<span>{new Date(group.startDate).toLocaleDateString("is-IS")}</span>
-										{group.endDate && (
-											<span>
-												{" - "}
-												{new Date(group.endDate).toLocaleDateString("is-IS")}
-											</span>
-										)}
-									</div>
-								</div>
-							</Link>
-						))
-					)}
-				</div>
+				<Activities groups={archivedGroups} archived={true} />
 			</section>
 		</main>
 	);

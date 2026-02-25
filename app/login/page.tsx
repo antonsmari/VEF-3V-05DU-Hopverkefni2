@@ -3,6 +3,7 @@ import { getUserByEmail } from "@/db/repo/usersRepo";
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 import { createDbSession } from "@/lib/auth/session";
+import { FormWithAction } from "@/components/FormWithAction";
 
 export default function Login() {
 	async function loginUser(formData: FormData) {
@@ -40,8 +41,7 @@ export default function Login() {
 
 	return (
 		<div className="form-page">
-			<Form formMethod="post" action={loginUser} className="form-card">
-
+			<FormWithAction action={loginUser}>
 				<h2>Log In</h2>
 
 				<div className="form-group">
@@ -69,8 +69,7 @@ export default function Login() {
 				<div className="form-submit">
 					<button type="submit">Log In</button>
 				</div>
-
-			</Form>
+			</FormWithAction>
 		</div>
 	);
 }

@@ -13,6 +13,16 @@ const LOGOS = [
 
 export default function Home() {
 	const [randomLogo, setRandomLogo] = useState(LOGOS[0]);
+	const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
+
+	useEffect(() => {
+		const run = async () => {
+			const res = await fetch("/api/login/status");
+			const data = await res.json();
+			setLoggedIn(Boolean(data.loggedIn));
+		};
+		run();
+	}, []);
 
 	useEffect(() => {
 		Promise.resolve().then(() => {
@@ -31,7 +41,9 @@ export default function Home() {
 					className="hero-logo"
 					priority
 				/>
-				<h1>A simpler way to manage shared expenses</h1>
+				<h1 className="shadow-text">
+					A simpler way to manage shared expenses
+				</h1>
 			</section>
 
 			<section className="intro">
@@ -63,18 +75,18 @@ export default function Home() {
 				<div className="intro-pattern moving-pattern"></div>
 			</section>
 
-			<section className="features">
-				<div className="feature">
+			<section className="features ">
+				<div className="feature shadow-text">
 					<p>Create and organize groups easily</p>
 					<span>✦</span>
 				</div>
 
-				<div className="feature">
+				<div className="feature shadow-text">
 					<p>Track and approve shared expenses</p>
 					<span>➞</span>
 				</div>
 
-				<div className="feature">
+				<div className="feature shadow-text">
 					<p>Settle payments transparently</p>
 					<span>$</span>
 				</div>
@@ -84,23 +96,27 @@ export default function Home() {
 				<div className="pattern-strip-inner moving-pattern"></div>
 			</section>
 
-			<section className="auth">
-				<div className="auth-box">
-					<p className="auth-text">Already have an account?</p>
-					<h3>Login</h3>
-					<Link href="/login">
-						<button>Login</button>
-					</Link>
-				</div>
+			{loggedIn === false && (
+				<section className="auth">
+					<div className="auth-box">
+						<p className="auth-text">Already have an account?</p>
+						<h3>Login</h3>
+						<Link href="/login">
+							<button>Login</button>
+						</Link>
+					</div>
 
-				<div className="auth-box">
-					<p className="auth-text">New here? Create your account</p>
-					<h3>Sign Up</h3>
-					<Link href="/register">
-						<button>Sign Up</button>
-					</Link>
-				</div>
-			</section>
+					<div className="auth-box">
+						<p className="auth-text">
+							New here? Create your account
+						</p>
+						<h3>Sign Up</h3>
+						<Link href="/register">
+							<button>Sign Up</button>
+						</Link>
+					</div>
+				</section>
+			)}
 		</main>
 	);
 }

@@ -8,6 +8,8 @@ import {
 	Participant,
 	settleDebts,
 } from "@/lib/calculation/expenseShare";
+import { ToastError } from "@/lib/errors/ToastError";
+import { title } from "process";
 
 export default async function TransactionNew({
 	params,
@@ -36,16 +38,25 @@ export default async function TransactionNew({
 			0,
 		);
 
+		if (
+			formData.get("title") === null ||
+			(formData.get("title") as string).trim() === ""
+		) {
+			throw new ToastError("Title is required");
+		}
+
 		for (const participant of participants) {
 			if (isNaN(participant.paidAmount) || participant.paidAmount < 0) {
-				throw new Error(
+				throw new ToastError(
 					"Paid amount must be a number and cannot be negative",
 				);
 			}
 		}
 
 		if (isNaN(totalAmount) || totalAmount <= 0) {
-			throw new Error("Total amount must be defined and greater than 0");
+			throw new ToastError(
+				"Total amount must be defined and greater than 0",
+			);
 		}
 
 		const dateString = formData.get("occurredAt") as string;
@@ -76,7 +87,7 @@ export default async function TransactionNew({
 		});
 
 		if (!transaction) {
-			throw new Error("Failed to create transaction");
+			throw new ToastError("Failed to create transaction");
 		} else {
 			const debts = await calculateDebts(participantsForCalculation);
 			const participantsUserIdList = participantsForCalculation.map(
@@ -90,9 +101,7 @@ export default async function TransactionNew({
 	}
 
 	return (
-		<div>
-			<h1>New Transaction</h1>
-			<h4>Members who are checked are either</h4>
+		<div className="form-page">
 			<TransactionForm
 				groupMembers={groupMembers}
 				action={newTransaction}
